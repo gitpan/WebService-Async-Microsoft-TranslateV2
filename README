@@ -1,0 +1,217 @@
+NAME
+    WebService::Async::Microsoft::TranslateV2 - Subclass of
+    WebService::Async that has a simple interface to Microsoft Translate
+    Service.
+
+SYNOPSIS
+  Simple usage
+   SOURCE
+      use WebService::Async::Microsoft::TranslateV2;
+      my $translator = WebService::Async::Microsoft::TranslateV2->new(
+        app_id => '[YOUR BING APPLICATION ID]',
+      );
+      $translator->source_language('en');
+      $translator->set_destination_languages(qw(it fr));
+      $translator->set_message( message1 => 'apple' );
+      $translator->set_message( message2 => 'banana' );
+      $translator->set_message( message3 => 'orange' );
+      $translator->translate(
+          on_each_translation => sub {
+              my ($self, $id, $res) = @_;
+              print $res;
+          },
+          on_translation_complete => sub {
+              my ($self, $all_res) = @_;
+              print $all_res;
+          },
+      );
+
+   RESULTS
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result id="message3">
+          <translated lang="it">arancione</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result id="message1">
+          <translated lang="fr">Apple</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result id="message2">
+          <translated lang="fr">la banane</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result id="message2">
+          <translated lang="it">banana</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result id="message3">
+          <translated lang="fr">orange</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result id="message1">
+          <translated lang="it">mela</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <results>
+          <result id="message2">
+              <translated lang="it">banana</translated>
+              <translated lang="fr">la banane</translated>
+          </result>
+          <result id="message3">
+              <translated lang="it">arancione</translated>
+              <translated lang="fr">orange</translated>
+          </result>
+          <result id="message1">
+              <translated lang="it">mela</translated>
+              <translated lang="fr">Apple</translated>
+          </result>
+      </results>
+
+  Using custom templates
+   SOURCE
+      use WebService::Async::Microsoft::TranslateV2;
+      my $translator = WebService::Async::Microsoft::TranslateV2->new(
+        app_id => '[YOUR BING APPLICATION ID]',
+      );
+
+      $translator->single_template(get_data_section('single'));
+      $translator->whole_template(get_data_section('whole'));
+      $translator->critical_error_template(get_data_section('critical_error'));
+
+      $translator->source_language('en');
+      $translator->set_destination_languages(qw(it fr));
+      $translator->set_message( message1 => 'apple' );
+      $translator->set_message( message2 => 'banana' );
+      $translator->set_message( message3 => 'orange' );
+      $translator->translate(
+          on_each_translation => sub {
+              my ($self, $id, $res) = @_;
+              print $res;
+          },
+          on_translation_complete => sub {
+              my ($self, $all_res) = @_;
+              print $all_res;
+          },
+      );
+
+      __DATA__  
+      @@ single
+      ?= Text::MicroTemplate::encoded_string '<?xml version="1.0" encoding="UTF-8"?>'
+      ? my ($id, $lang, $message) = @_
+      <result key="<?= $id ?>">
+          <translated lang="<?= $lang ?>"><?= $message ?></translated>
+      </result>
+      ?= "\0"
+  
+      @@ whole
+      ?= Text::MicroTemplate::encoded_string '<?xml version="1.0" encoding="UTF-8"?>'
+      ? my ($self, $messages) = @_;
+      <results>
+      ? for my $key ($self->all_messages_ids) {
+          <result key="<?= $key ?>">
+      ?   for my $lang ($self->all_destination_languages) {
+      ?       my $text = $self->get_translated_message(id => $key, language => $lang);
+              <translated lang="<?= $lang ?>"><?= $text ?></translated>
+      ?   }
+          </result>
+      ? }
+      </results>
+      ?= "\0"
+
+      @@ critical_error
+      CRITICAL ERROR
+
+   RESULTS
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result key="message3">
+          <translated lang="it">arancione</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result key="message1">
+          <translated lang="fr">Apple</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result key="message2">
+          <translated lang="fr">la banane</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result key="message2">
+          <translated lang="it">banana</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result key="message3">
+          <translated lang="fr">orange</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <result key="message1">
+          <translated lang="it">mela</translated>
+      </result>
+  
+      <?xml version="1.0" encoding="UTF-8"?>
+      <results>
+          <result key="message2">
+              <translated lang="it">banana</translated>
+              <translated lang="fr">la banane</translated>
+          </result>
+          <result key="message3">
+              <translated lang="it">arancione</translated>
+              <translated lang="fr">orange</translated>
+          </result>
+          <result key="message1">
+              <translated lang="it">mela</translated>
+              <translated lang="fr">Apple</translated>
+          </result>
+      </results>
+
+DESCRIPTION
+    WebService::Async::Microsoft::TranslateV2 is subclass of
+    WebService::Async that has a simple interface to Microsoft Translate
+    Service.
+
+METHODS
+  source_language
+    Sets the source language.
+
+      $translator->source_language('en');
+
+  set_destination_languages
+    Sets destination languages.
+
+      $translator->set_destination_languages(qw(it fr));
+
+  set_message
+    Sets messages that you want to translate.
+
+      $translator->set_message( message1 => 'apple' );
+
+  translate
+      $translator->translate(
+          on_each_translation => sub {
+              my ($self, $id, $res) = @_;
+          },
+          on_translation_complete => sub {
+              my ($self, $all_res) = @_;
+          },
+      );
+
+AUTHOR
+    keroyon <keroyon@cpan.org>
+
+SEE ALSO
+    WebService::Async
+
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+

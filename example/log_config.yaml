@@ -1,0 +1,9 @@
+dispatchers:
+  - screen
+
+screen:
+  class: Log::Dispatch::Screen
+  min_level: debug
+  newline: 1
+  stderr: 1
+  format: '[%d] [%p] %m at %F line %L'
