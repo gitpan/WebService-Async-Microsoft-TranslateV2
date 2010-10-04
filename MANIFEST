@@ -1,6 +1,7 @@
 Changes
 example/example.pl
 example/log_config.yaml
+inc/Data/Section/Simple.pm
 inc/IO/Prompt.pm
 inc/Module/Install.pm
 inc/Module/Install/AuthorTests.pm

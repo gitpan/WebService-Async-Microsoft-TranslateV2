@@ -9,9 +9,13 @@ githubmeta;
 tests 't/*.t';
 author_tests 'xt';
 
+requires 'Text::MicroTemplate';
+
 build_requires 'Test::More';
 build_requires 'IO::Prompt';
+build_requires 'Data::Section::Simple';
 build_requires 'WebService::Async';
+
 auto_set_repository;
 auto_include;
 WriteAll;

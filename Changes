@@ -1,4 +1,7 @@
 Revision history for Perl extension WebService::Async::Microsoft::TranslateV2
 
+0.02    Mon Oct 4 07:00:00 2010
+        - fixed Makfile.PL
+
 0.01    Fri Oct 1 19:57:16 2010
         - original version
