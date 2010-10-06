@@ -7,17 +7,26 @@ use WebService::Async::Microsoft::TranslateV2;
 
 # live test
 my $app_id;
-prompt 'Do you want to run the live tests. Bing application id is necessary for these tests (y/N)?', -d => 'N';
-if ($_ =~ /\Ay(?:es)?/i) {
-    prompt 'Enter your bing application id> ';
-    $app_id = $_;
-    chomp $app_id;
-    if (!defined $app_id || $app_id eq '') {
-        plan skip_all => 'You must get the correct bing application id.';
+eval {
+    local $SIG{ALRM} = sub { die "alarm\n" };
+    alarm 30;
+    prompt 'Do you want to run the live tests. Bing application id is necessary for these tests (y/N)?', -d => 'N';
+    if ($_ =~ /\Ay(?:es)?/i) {
+        prompt 'Enter your bing application id> ';
+        $app_id = $_;
+        chomp $app_id;
+        if (!defined $app_id || $app_id eq '') {
+            plan skip_all => 'You must get the correct bing application id.';
+        }
+        plan tests => 4;
     }
-    plan tests => 4;
-}
-else {
+    else {
+        plan skip_all => 'Test is canceled.';
+    }
+    alarm 0;
+};
+
+if (!defined $app_id) {
     plan skip_all => 'Test is canceled.';
 }
 

@@ -11,7 +11,7 @@ use Text::MicroTemplate qw(:all);
 use WebService::Async::Converter::Function;
 
 use 5.008008;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use constant TRANSLATION_API =>
   'http://api.microsofttranslator.com/V2/Ajax.svc/Translate';

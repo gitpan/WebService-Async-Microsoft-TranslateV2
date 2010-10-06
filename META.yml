@@ -26,4 +26,4 @@ resources:
   homepage: http://github.com/keroyonn/p5-WebService-Async-Microsoft-TranslateV2/tree
   license: http://dev.perl.org/licenses/
   repository: git://github.com/keroyonn/p5-WebService-Async-Microsoft-TranslateV2.git
-version: 0.02
+version: 0.03
